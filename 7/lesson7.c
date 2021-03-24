@@ -41,6 +41,56 @@ void sortInserts(int* arr, int len){
   }
 }
 
+//Block sort
+void bucketSort(int* arr, int len){
+  const int max = len;
+  const int b = 10;
+
+  int buckets[b][max + 1];
+  for(int i = 0; i < b; ++i){
+    buckets[i][max] = 0;
+  }
+
+  for (int digit = 1; digit < 1000000000; digit*=10){
+    for (int i = 0; i < max; ++i){
+      int d = (arr[i] / digit) % b;
+
+      //var1
+      /* int counter = buckets[d][max]; */
+      /* buckets[d][counter] = arr[i]; */
+      /* counter++; */
+      /* buckets[d][max] = counter; */
+
+      //var2
+      buckets[d][buckets[d][max]++] = arr[i];
+    }
+
+    int idx = 0;
+    for (int i = 0; i < b; ++i){
+      for (int j = 0; j < buckets[i][max]; ++j){
+        arr[idx++] = buckets[i][j];
+      }
+      buckets[i][max] = 0;
+    }
+  }
+}
+
+void evenBucketSort(int* arr, int len){
+  const int EVEN_LEN = len / 2;
+  int tempArr[EVEN_LEN];
+  /* int j = 0; */
+
+  for (int i = 1, j = 0; i < len; i+= 2, ++j){
+    tempArr[j] = arr[i];
+  }
+
+  bucketSort(tempArr, EVEN_LEN);
+
+  for (int i = 1, j = 0; i < len; i+= 2, ++j){
+    arr[i] = tempArr[j];
+  }
+}
+
 int* computeMedian(int* arr, int first, int last, int center){
   return (arr[first] > arr[last]) ? ((arr[first] > arr[center]) ? &arr[first] : &arr[center] ) : ((arr[last] > arr[center]) ? &arr[last] : &arr[center]);
 }
@@ -63,10 +113,17 @@ void qs2_0(int* arr, int first, int last){
 int main(int argc, char *argv[]) {
   const int SZ = 30;
   int arr[SZ];
+
+  printf("Quick sort 2.0\n");
   fillIntRandom(arr, SZ, 100);
   printIntArray(arr, SZ);
-
   qs2_0(arr, 0, SZ - 1);
+  printIntArray(arr, SZ);
+
+  printf("Even bucket sort\n");
+  fillIntRandom(arr, SZ, 100);
+  printIntArray(arr, SZ);
+  evenBucketSort(arr, SZ);
   printIntArray(arr, SZ);
 
   return 0;
